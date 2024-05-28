@@ -1,4 +1,4 @@
-name: cowsay
+name: Cowsay Dragon Workflow
 
 on:
     push:
@@ -8,10 +8,13 @@ jobs:
     build-job1:
         runs-on: ubuntu-latest
         steps:
-            - name: checkout repository
+            - name: Checkout repository
               uses: actions/checkout@v4
 
-            - name: install cowsay program
+            - name: Update apt-get
+              run: sudo apt-get update
+
+            - name: Install cowsay program
               run: sudo apt-get install cowsay -y
 
             - name: Execute cowsay CMD
@@ -22,5 +25,6 @@ jobs:
               with:
                   name: dragon-file
                   path: dragon.txt
-            - name: read readme file
+
+            - name: List files in the repository
               run: ls -l
