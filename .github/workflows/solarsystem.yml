@@ -1,0 +1,48 @@
+name: Solar System Workflow
+
+on:
+    push:
+        branches:
+            - main
+            - "features/*"
+env:
+    MONGO_URI: mongodb+srv://supercluster.d83jj.mongodb.net/superData
+    MONGO_USERNAME: "superuser"
+    MONGO_PASSWORD: "SuperPassword"
+
+jobs:
+    Unit-Testing-Job:
+        name: Unit Testing
+        strategy:
+            matrix:
+                node-versions: [14, 16, 18]
+                operating-systems: [ubuntu-latest, macos-latest, windows-latest]
+        runs-on: ${{ matrix.operating-systems }}
+
+        steps:
+            # Checkout the repository, to list all the files that might be used
+            - name: Checkout repository files
+              uses: actions/checkout@v4
+
+            # Install Node.js on all the supported operating systems
+            - name: Setup Node.js versions ${{ matrix.node-versions }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-versions }}
+
+            # Install all the dependencies and packages
+            - name: Install dependencies
+              run: npm install
+
+            # Run the unit tests and put id to get the test cases results generated after this phase
+            - name: Run unit tests
+              id: unit-test-id
+              run: npm run test
+
+            # Upload the test results
+            - name: Upload test results
+              if: steps.unit-test-id.outcome == 'success' || steps.unit-test-id.outcome == 'failure'
+              uses: actions/upload-artifact@v4
+              with:
+                  name: test-results
+                  path: test-results.xml
